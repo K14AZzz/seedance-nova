@@ -14,7 +14,11 @@ This skill intentionally does **not** use `fal` or OpenAI video endpoints. It ca
 - `POST /volcengine/api/v3/contents/generations/tasks`
 - `GET /volcengine/api/v3/contents/generations/tasks/{id}`
 
-## Install
+## Install for Codex
+
+This repository is meant to be copied into a Codex skill directory.
+
+### 1. Copy the skill into Codex
 
 Copy the `seedance-nova` folder into:
 
@@ -22,12 +26,36 @@ Copy the `seedance-nova` folder into:
 ~/.codex/skills/
 ```
 
-Then configure a Nova key either with:
+After copying, the expected layout is:
+
+```text
+~/.codex/skills/
+└── seedance-nova/
+    ├── SKILL.md
+    ├── scripts/
+    │   └── seedance.py
+    └── references/
+        └── config.example.json
+```
+
+### 2. Provide a Nova API key
+
+Each user should normally use their **own** Nova key.
+
+You can configure the key in either of these ways:
 
 - environment variable `NOVA_LLM_API_KEY`
-- or local file `~/.config/seedance-nova/config.json`
+- local file `~/.config/seedance-nova/config.json`
 
-Example config:
+### 3. Create local config (optional but recommended)
+
+Create:
+
+```text
+~/.config/seedance-nova/config.json
+```
+
+Example:
 
 ```json
 {
@@ -41,7 +69,33 @@ Example config:
 }
 ```
 
-## Manual usage
+You can also start from:
+
+```text
+seedance-nova/references/config.example.json
+```
+
+### 4. Verify the installation
+
+Run:
+
+```bash
+python3 ~/.codex/skills/seedance-nova/scripts/seedance.py probe
+```
+
+If setup is correct, you should see visible Seedance model ids from Nova.
+
+### 5. Use it from Codex
+
+Once the folder is under `~/.codex/skills/`, other Codex sessions on the same machine should be able to discover it automatically.
+
+Typical prompts:
+
+- `用 seedance-nova 生成一个 4 秒 16:9 的雨夜街景视频`
+- `帮我检查 seedance-nova 现在能看到哪些模型`
+- `用 seedance-nova 查询这个任务状态：cgt-xxxx`
+
+## Manual CLI usage
 
 ```bash
 python3 scripts/seedance.py probe
@@ -56,6 +110,20 @@ python3 scripts/seedance.py generate \
 ```bash
 python3 scripts/seedance.py status TASK_ID
 ```
+
+## Commands
+
+- `probe`: check gateway connectivity and visible Seedance models
+- `submit`: create a task and return its task id
+- `status`: query an existing task
+- `download`: download a finished video from a successful task
+- `generate`: create a task, poll until finished, and optionally download the output
+
+## Security notes
+
+- Do not commit real API keys into this repository.
+- Prefer per-user keys for auditability, quota control, and safer revocation.
+- If multiple people share one key, they also share spend, rate limits, and operational risk.
 
 ## Notes
 
